@@ -1,17 +1,21 @@
-header {
-    background-color: #4a81bb;
-    color: rgb(2, 2, 2);
-    padding: 20px;
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-}
+
+
+
 
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
+}
+
+header {
+    background-color: #4a81bb;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
 }
 
 .simulador-container {
@@ -38,11 +42,12 @@ label {
     font-weight: bold;
 }
 
-input[type="number"] {
+input[type="number"], select {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
+    width: 100%;
 }
 
 button {
@@ -53,6 +58,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
@@ -74,4 +80,9 @@ h2 {
 p {
     font-size: 18px;
     color: #000000;
+}
+
+span {
+    font-weight: bold;
+    color: #0071bb;
 }
