@@ -1,0 +1,9 @@
+
+
+
+[
+    { "nombre": "Básica", "tasa": 12 },
+    { "nombre": "Media", "tasa": 15 },
+    { "nombre": "Alta", "tasa": 18 }
+  ]
+  

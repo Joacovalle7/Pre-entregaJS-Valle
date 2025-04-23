@@ -14,6 +14,15 @@
     <div class="simulador-container">
         <h1>SIMULA TU PRÉSTAMO AQUÍ</h1>
         <form class="simulador-form">
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" required placeholder="Tu nombre completo">
+
+            <label for="apellido">Apellido:</label>
+            <input type="text" id="apellido" name="apellido" required placeholder="Tu apellido">
+
+            <label for="email">Correo electrónico:</label>
+            <input type="email" id="email" name="email" required placeholder="Tu correo electrónico">
+
             <label for="monto">Monto del préstamo ($):</label>
             <input type="number" id="monto" class="monto" name="monto" required placeholder="Ejemplo: 1000" min="1">
 
@@ -37,7 +46,7 @@
             <p><strong>Total a pagar:</strong> $<span id="totalPagar">0.00</span></p>
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="main.js"></script>
 </body>
 </html>

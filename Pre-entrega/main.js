@@ -1,44 +1,94 @@
 
 
+let historialSimulaciones = [];
 
-function calcularPrestamo() {
-    let monto = parseFloat(document.getElementById("monto").value);
-    let plazo = parseInt(document.getElementById("plazo").value);
-    let tipoTasa = document.getElementById("tipoTasa").value; 
+let tasasInteres = [];
 
-    if (isNaN(monto) || isNaN(plazo) || monto <= 0 || plazo <= 0) {
-        alert("Por favor, ingrese valores numéricos válidos.");
-        return;
-    }
+fetch('tasas.json')
+  .then(res => res.json())
+  .then(data => {
+    tasasInteres = data;
+  })
+  .catch(err => {
+    console.error("Error al cargar tasas:", err);
+    Swal.fire({
+      icon: "error",
+      title: "Error al cargar tasas",
+      text: "No se pudieron obtener las tasas desde el archivo JSON.",
+    });
+  });
 
-    const tasaAnual = obtenerTasa(tipoTasa);
-    let tasaMensual = tasaAnual / 100 / 12;
+document.querySelector(".boton-calcular").addEventListener("click", () => {
+  const nombre = document.getElementById("nombre").value;
+  const apellido = document.getElementById("apellido").value;
+  const email = document.getElementById("email").value;
+  const monto = parseFloat(document.getElementById("monto").value);
+  const plazo = parseInt(document.getElementById("plazo").value);
+  const tipoTasa = document.getElementById("tipoTasa").value;
 
-    let factor = 1 - (1 / ((1 + tasaMensual) ** plazo));
-    let pagoMensual = (monto * tasaMensual) / factor;
-    let totalPagar = pagoMensual * plazo;
-    let interesTotal = totalPagar - monto;
+  if (isNaN(monto) || isNaN(plazo) || monto <= 0 || plazo <= 0 || !nombre || !apellido || !email) {
+    Swal.fire({
+      icon: "warning",
+      title: "Datos inválidos",
+      text: "Por favor, ingresa todos los datos correctamente.",
+    });
+    return;
+  }
 
-    pagoMensual = Math.round(pagoMensual * 100) / 100;
-    interesTotal = Math.round(interesTotal * 100) / 100;
-    totalPagar = Math.round(totalPagar * 100) / 100;
+  const tasaObj = tasasInteres.find(t => t.nombre === tipoTasa);
+  if (!tasaObj) return;
 
-    document.getElementById("pagoMensual").textContent = pagoMensual.toFixed(2);
-    document.getElementById("interesTotal").textContent = interesTotal.toFixed(2);
-    document.getElementById("totalPagar").textContent = totalPagar.toFixed(2);
+  const tasaMensual = (tasaObj.tasa / 100) / 12;
+  const factor = 1 - (1 / Math.pow((1 + tasaMensual), plazo));
+  const pagoMensual = +(monto * tasaMensual / factor).toFixed(2);
+  const totalPagar = +(pagoMensual * plazo).toFixed(2);
+  const interesTotal = +(totalPagar - monto).toFixed(2);
 
-    document.getElementById("resultado").style.display = "block";
+  mostrarResultado(pagoMensual, interesTotal, totalPagar);
+
+  const simulacion = {
+    fecha: new Date().toLocaleString(),
+    nombre,
+    apellido,
+    email,
+    monto,
+    plazo,
+    tipoTasa,
+    pagoMensual,
+    totalPagar,
+    interesTotal
+  };
+
+  historialSimulaciones.push(simulacion);
+  renderizarHistorial();
+});
+
+function mostrarResultado(pago, interes, total) {
+  document.getElementById("pagoMensual").textContent = pago.toFixed(2);
+  document.getElementById("interesTotal").textContent = interes.toFixed(2);
+  document.getElementById("totalPagar").textContent = total.toFixed(2);
+  document.getElementById("resultado").style.display = "block";
 }
 
-const tasasInteres = [
-    { nombre: "Básica", tasa: 12 },
-    { nombre: "Media", tasa: 15 },
-    { nombre: "Alta", tasa: 18 }
-];
+function renderizarHistorial() {
+  let contenedor = document.getElementById("historial");
+  if (!contenedor) {
+    contenedor = document.createElement("div");
+    contenedor.id = "historial";
+    contenedor.className = "resultado";
+    document.querySelector(".simulador-container").appendChild(contenedor);
+  }
 
-const obtenerTasa = (nombreTasa) => {
-    const tasa = tasasInteres.find(tasa => tasa.nombre === nombreTasa);
-    return tasa ? tasa.tasa : 12;
-};
+  contenedor.innerHTML = "<h2>Historial de Simulaciones</h2>";
 
-document.querySelector(".boton-calcular").addEventListener("click", calcularPrestamo);
+  historialSimulaciones.slice().reverse().forEach(sim => {
+    const item = document.createElement("p");
+    item.innerHTML = `
+      <strong>${sim.fecha}</strong> - ${sim.nombre} ${sim.apellido} (${sim.email})<br>
+      Monto: $${sim.monto}, Plazo: ${sim.plazo} meses, 
+      Tasa: ${sim.tipoTasa}, 
+      Mensual: $${sim.pagoMensual}, Total: $${sim.totalPagar}
+    `;
+    contenedor.appendChild(item);
+  });
+}
